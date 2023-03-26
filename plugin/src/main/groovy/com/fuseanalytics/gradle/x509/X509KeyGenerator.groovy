@@ -58,7 +58,7 @@ class X509KeyGenerator {
             subject = issuer
         }
 
-        KeyPair keypair = generateKeyPair(keySize)
+        KeyPair keypair = generateKeyPair()
 
         ContentSigner signer = new JcaContentSignerBuilder("SHA256withRSA")
                 .setProvider("BC")
@@ -113,13 +113,9 @@ class X509KeyGenerator {
                 .build();
     }
 
-    private X500Name createX500Name(X509Certificate cert) {
-        return new X500Name( cert.getSubjectX500Principal().getName() );
-    }
-
-    private KeyPair generateKeyPair(int keysize) throws NoSuchAlgorithmException {
+    private KeyPair generateKeyPair() throws NoSuchAlgorithmException {
         KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");
-        generator.initialize( keysize );
+        generator.initialize( keySize );
         return generator.generateKeyPair();
     }
 
