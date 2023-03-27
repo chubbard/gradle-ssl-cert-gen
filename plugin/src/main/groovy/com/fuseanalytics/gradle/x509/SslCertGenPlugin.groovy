@@ -15,20 +15,6 @@ class SslCertGenPlugin implements Plugin<Project> {
     void apply(Project project) {
         Security.addProvider(new BouncyCastleProvider())
         CertificateExtension certificate = project.extensions.create( "certificate", CertificateExtension )
-        project.tasks.register("generateCert", X509Certificate, { task ->
-            task.description = "Generates a self-signed X509 Certificate according to the configuration."
-            task.group = "certificate"
-
-            task.commonName.set(certificate.commonName)
-            task.organization.set(certificate.organization)
-            task.organizationUnit.set(certificate.organizationUnit)
-            task.city.set(certificate.city)
-            task.region.set(certificate.region)
-            task.country.set(certificate.country)
-            task.password.set(certificate.keyPassword)
-            if( certificate.keyFile.isPresent() ) task.keyFile.set(certificate.keyFile)
-            if( certificate.keySize.isPresent() ) task.keySize.set(certificate.keySize)
-            if( certificate.daysValid.isPresent() ) task.daysValid.set(certificate.daysValid)
-        })
+        project.tasks.register("generateCert", X509Certificate, project, certificate )
     }
 }

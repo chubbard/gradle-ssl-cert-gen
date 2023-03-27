@@ -9,6 +9,9 @@ import spock.lang.Specification
 import spock.lang.TempDir
 import org.gradle.testkit.runner.GradleRunner
 
+import java.security.KeyStore
+import java.security.cert.X509Certificate
+
 /**
  * A simple functional test for the 'com.fuseanalytics.gradle.x509.greeting' plugin.
  */
@@ -49,11 +52,25 @@ certificate {
                 .withPluginClasspath()
                 .withArguments("generateCert")
                 .withProjectDir(projectDir)
+                .withGradleVersion("5.6.4")
                 .withDebug(true)
         BuildResult result = runner.build()
         then:
         result.task(":generateCert")?.outcome == TaskOutcome.SUCCESS
         certFile.exists()
         certFile.length() > 0
+
+        when:
+        KeyStore ks = KeyStore.getInstance("pkcs12")
+        certFile.withInputStream {
+            ks.load( it, "Hill of Beans!".getChars() )
+        }
+        then:
+        ks.containsAlias("gradle_ssl_cert")
+        ks.isKeyEntry("gradle_ssl_cert")
+        !ks.isCertificateEntry("gradle_ssl_cert")
+        ks.size() == 1
+        X509Certificate cert = ks.getCertificate("gradle_ssl_cert")
+        cert.issuerX500Principal.name == "C=US,ST=State,L=Niceville,OU=IT,O=Some Domain LLC,CN=somedomain.com"
     }
 }

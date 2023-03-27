@@ -100,10 +100,10 @@ class X509CertGenerator {
         X509Certificate cert = new JcaX509CertificateConverter().setProvider("BC").getCertificate(certificateHolder)
 
         ks.load(null, keyPassword)
-        ks.setKeyEntry("gradle_ssl_cert", keypair.getPrivate(), keyPassword, new Certificate[] { cert } )
+        ks.setKeyEntry("gradle_ssl_cert", keypair.getPrivate(), keyPassword, [cert] as Certificate[] )
         if( !keyFile.parentFile.exists() ) keyFile.parentFile.mkdirs()
-        try( OutputStream fos = new FileOutputStream(keyFile) ) {
-            ks.store(fos, keyPassword)
+        keyFile.withOutputStream {
+            ks.store( it, keyPassword )
         }
         return ks
     }
@@ -126,8 +126,7 @@ class X509CertGenerator {
     }
 
     private static SubjectKeyIdentifier createSubjectKeyIdentifier(Key key) throws IOException {
-        ByteArrayInputStream bIn = new ByteArrayInputStream(key.getEncoded())
-        try(ASN1InputStream is = new ASN1InputStream(bIn)) {
+        new ASN1InputStream(new ByteArrayInputStream(key.getEncoded())).withStream {is ->
             ASN1Sequence seq = (ASN1Sequence) is.readObject()
             SubjectPublicKeyInfo info = SubjectPublicKeyInfo.getInstance(seq)
             return new BcX509ExtensionUtils().createSubjectKeyIdentifier(info)

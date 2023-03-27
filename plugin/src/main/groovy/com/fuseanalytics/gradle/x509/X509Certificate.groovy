@@ -50,11 +50,31 @@ abstract class X509Certificate extends DefaultTask {
     @Optional
     abstract Property<Integer> getKeySize()
 
-    @Inject
     X509Certificate(Project project) {
+        description = "Generates a self-signed X509 Certificate according to the configuration."
+        group = "certificate"
+
         keyFile.convention(new File( project.rootDir, "build/certificate/${project.name.toLowerCase().replaceAll(/\s/,"_")}.pkcs12" ))
         daysValid.convention(DEFAULT_VALIDITY)
         keySize.convention(DEFAULT_KEY_SIZE)
+    }
+
+    @Inject
+    X509Certificate(Project project, CertificateExtension certificate ) {
+        this( project )
+
+        if( certificate != null ) {
+            commonName.set(certificate.commonName)
+            organization.set(certificate.organization)
+            organizationUnit.set(certificate.organizationUnit)
+            city.set(certificate.city)
+            region.set(certificate.region)
+            country.set(certificate.country)
+            password.set(certificate.keyPassword)
+            if( certificate.keyFile.isPresent() ) keyFile.set(certificate.keyFile)
+            if( certificate.keySize.isPresent() ) keySize.set(certificate.keySize)
+            if( certificate.daysValid.isPresent() ) daysValid.set(certificate.daysValid)
+        }
     }
 
     @TaskAction
