@@ -3,6 +3,8 @@
  */
 package com.fuseanalytics.gradle.x509
 
+import org.gradle.testkit.runner.BuildResult
+import org.gradle.testkit.runner.TaskOutcome
 import spock.lang.Specification
 import spock.lang.TempDir
 import org.gradle.testkit.runner.GradleRunner
@@ -22,24 +24,36 @@ class GradleSslCertGenPluginFunctionalTest extends Specification {
         new File(projectDir, "settings.gradle")
     }
 
-    def "can run task"() {
+    def "run generateCert"() {
         given:
         settingsFile << ""
         buildFile << """
 plugins {
-    id('com.fuseanalytics.gradle.x509.greeting')
+    id('com.fuseanalytics.gradle.x509.SslCertGen')
+}
+
+certificate {
+    commonName = "somedomain.com"
+    organization = "Some Domain LLC"
+    organizationUnit = "IT"
+    city = "Niceville"
+    region = "State"
+    country = "US"
+    keyPassword = "Hill of Beans!"
 }
 """
-
+        File certFile = new File( projectDir, "build/certificate/${projectDir.name}.pkcs12")
         when:
-        def runner = GradleRunner.create()
-        runner.forwardOutput()
-        runner.withPluginClasspath()
-        runner.withArguments("greeting")
-        runner.withProjectDir(projectDir)
-        def result = runner.build()
-
+        GradleRunner runner = GradleRunner.create()
+                .forwardOutput()
+                .withPluginClasspath()
+                .withArguments("generateCert")
+                .withProjectDir(projectDir)
+                .withDebug(true)
+        BuildResult result = runner.build()
         then:
-        result.output.contains("Hello from plugin 'com.fuseanalytics.gradle.x509.greeting'")
+        result.task(":generateCert")?.outcome == TaskOutcome.SUCCESS
+        certFile.exists()
+        certFile.length() > 0
     }
 }

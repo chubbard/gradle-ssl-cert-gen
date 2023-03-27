@@ -22,13 +22,14 @@ dependencies {
             "org.bouncycastle:bcpkix-jdk18on:1.72"
 
     testImplementation 'org.spockframework:spock-core:2.0-groovy-3.0'
+    testImplementation gradleTestKit()
 }
 
 gradlePlugin {
     plugins {
         sslCertGen {
             id = 'com.fuseanalytics.gradle.x509.SslCertGen'
-            implementationClass = 'com.fuseanalytics.gradle.x509.GradleSslCertGenPlugin'
+            implementationClass = 'com.fuseanalytics.gradle.x509.SslCertGenPlugin'
         }
     }
 }

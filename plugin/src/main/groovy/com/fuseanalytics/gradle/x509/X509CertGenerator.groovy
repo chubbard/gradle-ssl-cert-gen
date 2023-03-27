@@ -1,12 +1,16 @@
 package com.fuseanalytics.gradle.x509
 
+import groovy.transform.CompileStatic
 import org.bouncycastle.asn1.ASN1EncodableVector
 import org.bouncycastle.asn1.ASN1InputStream
 import org.bouncycastle.asn1.ASN1Sequence
 import org.bouncycastle.asn1.DERSequence
 import org.bouncycastle.asn1.x500.X500Name
 import org.bouncycastle.asn1.x500.X500NameBuilder
+import org.bouncycastle.asn1.x500.style.BCStyle
 import org.bouncycastle.asn1.x509.BasicConstraints
+import org.bouncycastle.asn1.x509.Extension
+import org.bouncycastle.asn1.x509.KeyPurposeId
 import org.bouncycastle.asn1.x509.KeyUsage
 import org.bouncycastle.asn1.x509.SubjectKeyIdentifier
 import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo
@@ -28,10 +32,11 @@ import java.security.cert.Certificate
 import java.security.cert.X509Certificate
 import java.util.concurrent.TimeUnit
 
-class X509KeyGenerator {
+@CompileStatic
+class X509CertGenerator {
 
-    public static final int DEFAULT_KEY_BIT_DEPTH = 1024 * 2;
-    public static final int CERT_DAYS = 365;
+    public static final int DEFAULT_KEY_BIT_DEPTH = 1024 * 2
+    public static final int CERT_DAYS = 365
 
     File keyFile
     char[] keyPassword
@@ -41,12 +46,12 @@ class X509KeyGenerator {
     int daysValid = CERT_DAYS
     int keySize = DEFAULT_KEY_BIT_DEPTH
 
-    public X509KeyGenerator(File keyFile, char[] password) {
+    public X509CertGenerator(File keyFile, char[] password) {
         this.keyFile = keyFile
         this.keyPassword = password
     }
 
-    public X509KeyGenerator issuer(String commonName, String org, String orgUnit, String city, String region, String country) {
+    public X509CertGenerator issuer(String commonName, String org, String orgUnit, String city, String region, String country) {
         issuer = createX500Name( commonName, org, orgUnit, city, region, country )
         return this
     }
@@ -54,7 +59,7 @@ class X509KeyGenerator {
     public KeyStore generate() {
         KeyStore ks = KeyStore.getInstance("pkcs12")
 
-        if( subject ) {
+        if( !subject ) {
             subject = issuer
         }
 
@@ -94,8 +99,9 @@ class X509KeyGenerator {
         X509CertificateHolder certificateHolder = generator.build(signer)
         X509Certificate cert = new JcaX509CertificateConverter().setProvider("BC").getCertificate(certificateHolder)
 
-        ks.setKeyEntry(alias, keypair.getPrivate(), keyPassword, new Certificate[] { cert } )
-
+        ks.load(null, keyPassword)
+        ks.setKeyEntry("gradle_ssl_cert", keypair.getPrivate(), keyPassword, new Certificate[] { cert } )
+        if( !keyFile.parentFile.exists() ) keyFile.parentFile.mkdirs()
         try( OutputStream fos = new FileOutputStream(keyFile) ) {
             ks.store(fos, keyPassword)
         }
@@ -110,35 +116,35 @@ class X509KeyGenerator {
                 .addRDN(BCStyle.L, city)
                 .addRDN(BCStyle.ST, region)
                 .addRDN(BCStyle.C, country)
-                .build();
+                .build()
     }
 
     private KeyPair generateKeyPair() throws NoSuchAlgorithmException {
-        KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");
-        generator.initialize( keySize );
-        return generator.generateKeyPair();
+        KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA")
+        generator.initialize( keySize )
+        return generator.generateKeyPair()
     }
 
     private static SubjectKeyIdentifier createSubjectKeyIdentifier(Key key) throws IOException {
-        ByteArrayInputStream bIn = new ByteArrayInputStream(key.getEncoded());
+        ByteArrayInputStream bIn = new ByteArrayInputStream(key.getEncoded())
         try(ASN1InputStream is = new ASN1InputStream(bIn)) {
-            ASN1Sequence seq = (ASN1Sequence) is.readObject();
-            SubjectPublicKeyInfo info = SubjectPublicKeyInfo.getInstance(seq);
-            return new BcX509ExtensionUtils().createSubjectKeyIdentifier(info);
+            ASN1Sequence seq = (ASN1Sequence) is.readObject()
+            SubjectPublicKeyInfo info = SubjectPublicKeyInfo.getInstance(seq)
+            return new BcX509ExtensionUtils().createSubjectKeyIdentifier(info)
         }
     }
 
     private BigInteger generateSerialNumber() {
-        Random random = new SecureRandom();
-        return new BigInteger(256,random);
+        Random random = new SecureRandom()
+        return new BigInteger(256,random)
     }
 
-    X509KeyGenerator keySize(int size) {
+    X509CertGenerator keySize(int size) {
         this.keySize = size
         return this
     }
 
-    X509KeyGenerator daysValid(int days) {
+    X509CertGenerator daysValid(int days) {
         this.daysValid = days
         return this
     }

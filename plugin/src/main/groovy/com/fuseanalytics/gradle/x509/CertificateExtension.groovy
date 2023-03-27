@@ -1,45 +1,26 @@
 package com.fuseanalytics.gradle.x509
 
-import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.InputFile
-import org.gradle.api.tasks.Optional
+import org.gradle.api.provider.Property
 
-class CertificateExtension {
+abstract class CertificateExtension {
 
-    public static final int DEFAULT_VALIDITY = 365
+    abstract Property<String> getCommonName()
 
-    public static final int DEFAULT_KEY_SIZE = 2048
+    abstract Property<String> getOrganization()
 
-    @Input
-    String commonName
+    abstract Property<String> getOrganizationUnit()
 
-    @Input
-    String organization
+    abstract Property<String> getCity()
 
-    @Input
-    String organizationUnit
+    abstract Property<String> getRegion()
 
-    @Input
-    String city
+    abstract Property<String> getCountry()
 
-    @Input
-    String region
+    abstract Property<String> getKeyPassword()
 
-    @Input
-    String country
+    abstract Property<File> getKeyFile()
 
-    @Input
-    String keyPassword
+    abstract Property<Integer> getDaysValid()
 
-    @InputFile
-    @Optional
-    File keyFile
-
-    @Optional
-    @Input
-    int daysValid = DEFAULT_VALIDITY
-
-    @Optional
-    @Input
-    int keySize = DEFAULT_KEY_SIZE
+    abstract Property<Integer> getKeySize()
 }

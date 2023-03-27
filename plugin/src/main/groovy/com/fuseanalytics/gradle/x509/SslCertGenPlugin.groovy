@@ -3,39 +3,32 @@
  */
 package com.fuseanalytics.gradle.x509
 
+
+import org.bouncycastle.jce.provider.BouncyCastleProvider
 import org.gradle.api.Project
 import org.gradle.api.Plugin
 
-import java.security.KeyStore
+import java.security.Security
 
 class SslCertGenPlugin implements Plugin<Project> {
 
     void apply(Project project) {
-        project.extensions.add(CertificateExtension, "certificate", new CertificateExtension() )
-        File certFile = project.file("${project.buildDir}/certificate/${project.name.toLowerCase().replaceAll(/\s/, "_")}.pkcs12")
+        Security.addProvider(new BouncyCastleProvider())
+        CertificateExtension certificate = project.extensions.create( "certificate", CertificateExtension )
+        project.tasks.register("generateCert", X509Certificate, { task ->
+            task.description = "Generates a self-signed X509 Certificate according to the configuration."
+            task.group = "certificate"
 
-        project.tasks.register("generateCert") {
-            description = "Generates a self-signed X509 Certificate according to the configuration."
-            group = "certificate"
-            doLast {
-                CertificateExtension certificate = project.extensions.getByType(CertificateExtension)
-
-                if( !certificate.keyFile ) {
-                    certificate.keyFile = certFile
-                }
-
-                KeyStore ks = new X509KeyGenerator( certificate.getKeyFile(), certificate.getKeyPassword().getChars() )
-                    .issuer( certificate.getCommonName(),
-                            certificate.getOrganization(),
-                            certificate.getOrganizationUnit(),
-                            certificate.getCity(),
-                            certificate.getRegion(),
-                            certificate.getCountry()
-                    )
-                    .keySize( certificate.keySize )
-                    .daysValid( certificate.daysValid )
-                    .generate()
-            }
-        }
+            task.commonName.set(certificate.commonName)
+            task.organization.set(certificate.organization)
+            task.organizationUnit.set(certificate.organizationUnit)
+            task.city.set(certificate.city)
+            task.region.set(certificate.region)
+            task.country.set(certificate.country)
+            task.password.set(certificate.keyPassword)
+            if( certificate.keyFile.isPresent() ) task.keyFile.set(certificate.keyFile)
+            if( certificate.keySize.isPresent() ) task.keySize.set(certificate.keySize)
+            if( certificate.daysValid.isPresent() ) task.daysValid.set(certificate.daysValid)
+        })
     }
 }
