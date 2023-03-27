@@ -13,7 +13,7 @@ import java.security.KeyStore
 import java.security.cert.X509Certificate
 
 /**
- * A simple functional test for the 'com.fuseanalytics.gradle.x509.greeting' plugin.
+ * A simple functional test for the 'com.fuseanalytics.gradle.x509.SslCertGen' plugin.
  */
 class GradleSslCertGenPluginFunctionalTest extends Specification {
     @TempDir
