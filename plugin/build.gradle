@@ -2,14 +2,15 @@ plugins {
     id 'java-gradle-plugin'
     id 'groovy'
     id 'com.gradle.plugin-publish' version '0.21.0'
+    id 'idea'
 }
+
+//wrapper {
+//    gradleVersion = "5.6.4"
+//}
 
 group = "com.fuseanalytics"
 version = "1.0.0"
-
-wrapper {
-    gradleVersion = "5.6.4"
-}
 
 repositories {
     mavenCentral()
@@ -37,7 +38,7 @@ gradlePlugin {
 pluginBundle {
     website = "https://github.com/chubbard/gradle-ssl-cert-gen"
     vcsUrl = "https://github.com/chubbard/gradle-ssl-cert-gen.git"
-    description = 'This plugin creates a self-signed certificate'
+    description = "This plugin creates a self-signed certificate using 100% Java solution so it is portable."
 
     mavenCoordinates {
         groupId = project.group
