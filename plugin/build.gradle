@@ -1,40 +1,46 @@
 plugins {
     id 'java-gradle-plugin'
     id 'groovy'
-    id 'com.gradle.plugin-publish' version '0.21.0'
+    id 'com.gradle.plugin-publish' version '1.3.1'
     id 'idea'
 }
 
-//wrapper {
-//    gradleVersion = "5.6.4"
-//}
-
 group = "com.fuseanalytics"
-version = "1.0.0"
+version = "1.1.0"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(11)
+    }
+}
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    implementation "org.bouncycastle:bcprov-jdk18on:1.72",
-            "org.bouncycastle:bcprov-ext-jdk18on:1.72",
-            "org.bouncycastle:bcpkix-jdk18on:1.72"
+    implementation "org.bouncycastle:bcprov-jdk18on:1.80",
+            "org.bouncycastle:bcprov-ext-jdk18on:1.78.1",
+            "org.bouncycastle:bcpkix-jdk18on:1.80"
 
-    testImplementation 'org.spockframework:spock-core:2.3-groovy-2.5'
-//    testImplementation 'org.spockframework:spock-core:2.3-groovy-3.0'
+    testImplementation 'org.spockframework:spock-core:2.3-groovy-3.0'
     testImplementation gradleTestKit()
 }
 
 gradlePlugin {
+    website = "https://github.com/chubbard/gradle-ssl-cert-gen"
+    vcsUrl = "https://github.com/chubbard/gradle-ssl-cert-gen.git"
     plugins {
-        sslCertGen {
+        create("sslCertGen") {
             id = 'com.fuseanalytics.gradle.sslcertgen'
             implementationClass = 'com.fuseanalytics.gradle.x509.SslCertGenPlugin'
+            description = "This plugin creates a self-signed certificate using 100% Java solution so it is portable."
+            displayName = 'Gradle SSLCertGen Plugin'
+            tags = ['ssl', 'keystore', 'tls', 'x509', 'certificate', 'self-signed']
         }
     }
 }
-
+/*
 pluginBundle {
     website = "https://github.com/chubbard/gradle-ssl-cert-gen"
     vcsUrl = "https://github.com/chubbard/gradle-ssl-cert-gen.git"
@@ -53,7 +59,7 @@ pluginBundle {
         }
     }
 }
-
+*/
 // Add a source set for the functional test suite
 sourceSets {
     functionalTest {
@@ -76,7 +82,7 @@ tasks.named('check') {
     dependsOn(tasks.functionalTest)
 }
 
-tasks.named('test') {
+tasks.named('test', Test) {
     // Use JUnit Jupiter for unit tests.
     useJUnitPlatform()
 }

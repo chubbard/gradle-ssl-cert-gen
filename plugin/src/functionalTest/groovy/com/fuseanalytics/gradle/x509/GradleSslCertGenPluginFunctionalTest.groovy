@@ -32,7 +32,7 @@ class GradleSslCertGenPluginFunctionalTest extends Specification {
         settingsFile << ""
         buildFile << """
 plugins {
-    id('com.fuseanalytics.gradle.x509.SslCertGen')
+    id('com.fuseanalytics.gradle.sslcertgen')
 }
 
 certificate {
@@ -52,7 +52,6 @@ certificate {
                 .withPluginClasspath()
                 .withArguments("generateCert")
                 .withProjectDir(projectDir)
-                .withGradleVersion("5.6.4")
                 .withDebug(true)
         BuildResult result = runner.build()
         then:
@@ -80,7 +79,7 @@ certificate {
         settingsFile << ""
         buildFile << """
 plugins {
-    id('com.fuseanalytics.gradle.x509.SslCertGen')
+    id('com.fuseanalytics.gradle.sslcertgen')
 }
 
 certificate {
@@ -103,7 +102,6 @@ certificate {
                 .withPluginClasspath()
                 .withArguments("generateCert")
                 .withProjectDir(projectDir)
-                .withGradleVersion("5.6.4")
                 .withDebug(true)
         BuildResult result = runner.build()
         then:
