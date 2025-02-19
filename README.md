@@ -25,7 +25,7 @@ Declare the plugin at the top of your `build.gradle`:
 
 ```
 plugins {
-   id "com.fuseanalytics.gradle.x509.SslCertGen"
+   id "com.fuseanalytics.gradle.sslcertgen"
 }
 ```
 
