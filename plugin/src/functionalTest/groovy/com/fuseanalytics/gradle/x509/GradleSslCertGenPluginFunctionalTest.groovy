@@ -46,6 +46,7 @@ certificate {
 }
 """
         File certFile = new File( projectDir, "build/certificate/${projectDir.name}.pkcs12")
+        assert !certFile.exists()
         when:
         GradleRunner runner = GradleRunner.create()
                 .forwardOutput()
