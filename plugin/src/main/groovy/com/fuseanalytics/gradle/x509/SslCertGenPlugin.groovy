@@ -14,6 +14,7 @@ class SslCertGenPlugin implements Plugin<Project> {
 
     void apply(Project project) {
         if( !Security.getProvider("BC") ) {
+            project.logger.info("Registering BouncyCastle Provider")
             Security.addProvider(new BouncyCastleProvider())
         }
         CertificateExtension certificate = project.extensions.create( "certificate", CertificateExtension )
