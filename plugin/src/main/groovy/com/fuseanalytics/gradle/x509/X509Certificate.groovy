@@ -54,7 +54,7 @@ abstract class X509Certificate extends DefaultTask {
         description = "Generates a self-signed X509 Certificate according to the configuration."
         group = "certificate"
 
-        keyFile.convention(new File( project.rootDir, "build/certificate/${project.name.toLowerCase().replaceAll(/\s/,"_")}.pkcs12" ))
+        keyFile.convention(new File( project.layout.buildDirectory.getAsFile().get(), "certificate/${project.name.toLowerCase().replaceAll(/\s/,"_")}.pkcs12" ))
         daysValid.convention(DEFAULT_VALIDITY)
         keySize.convention(DEFAULT_KEY_SIZE)
     }
