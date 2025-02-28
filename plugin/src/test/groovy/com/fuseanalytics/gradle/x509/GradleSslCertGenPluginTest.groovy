@@ -10,7 +10,7 @@ class GradleSslCertGenPluginTest extends Specification {
         Project project = ProjectBuilder.builder().build()
 
         when:
-        project.plugins.apply("com.fuseanalytics.gradle.x509.SslCertGen")
+        project.plugins.apply("com.fuseanalytics.gradle.sslcertgen")
 
         then:
         project.tasks.findByName("generateCert") != null
