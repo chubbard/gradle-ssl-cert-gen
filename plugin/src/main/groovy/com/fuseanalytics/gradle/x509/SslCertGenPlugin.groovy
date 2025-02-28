@@ -3,12 +3,19 @@
  */
 package com.fuseanalytics.gradle.x509
 
+
+import org.bouncycastle.jce.provider.BouncyCastleProvider
 import org.gradle.api.Project
 import org.gradle.api.Plugin
+
+import java.security.Security
 
 class SslCertGenPlugin implements Plugin<Project> {
 
     void apply(Project project) {
+        if( !Security.getProvider("BC") ) {
+            Security.addProvider(new BouncyCastleProvider())
+        }
         CertificateExtension certificate = project.extensions.create( "certificate", CertificateExtension )
         project.tasks.register("generateCert", X509Certificate, project, certificate )
     }
