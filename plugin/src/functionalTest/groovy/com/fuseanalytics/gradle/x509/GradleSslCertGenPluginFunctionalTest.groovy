@@ -45,7 +45,7 @@ certificate {
     keyPassword = "Hill of Beans!"
 }
 """
-        File certFile = new File( projectDir, "build/certificate/${projectDir.name}.pkcs12")
+        File certFile = new File( projectDir, "build/certificate/${projectDir.name}.p12")
         assert !certFile.exists()
         when:
         GradleRunner runner = GradleRunner.create()
