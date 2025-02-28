@@ -79,6 +79,16 @@ abstract class X509Certificate extends DefaultTask {
 
     @TaskAction
     public void generateCert() {
+        logger.debug("Creating Certificate using keyFile={}, keySize={}, daysValid={}, [CN={}, O={}, OU={}, L={}, P={}, C={}]",
+                keyFile.get(),
+                keySize.get(),
+                daysValid.get(),
+                commonName.get(),
+                organization.get(),
+                organizationUnit.get(),
+                city.get(),
+                region.get(),
+                country.get())
         KeyStore ks = new X509CertGenerator(keyFile.get(), password.get().getChars())
                 .issuer(commonName.get(),
                         organization.get(),
