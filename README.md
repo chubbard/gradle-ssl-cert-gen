@@ -46,7 +46,7 @@ certificate {
 The plugin adds a single task `generateCert` which will generate the certificate.
 
 Those are the bare minimum parameters that must be specified.  The resulting certificate will
-be saved into `${buildDir}/certificate/${project.name}.pkcs12`.  The project name will be in lower
+be saved into `${buildDir}/certificate/${project.name}.p12`.  The project name will be in lower
 case and any whitespace will be replaced with an underscore.
 
 The full set of parameters for the certificate block are the following:
@@ -57,6 +57,6 @@ The full set of parameters for the certificate block are the following:
    * **region** The region of the organization.
    * **country** The 2-letter ISO code for the country of the organization.
    * **keyPassword** The password for the private key.
-   * **keyFile** The file which the certificate will be written (default `${buildDir}/certificate/${project.name}.pkcs12`).
+   * **keyFile** The file which the certificate will be written (default `${buildDir}/certificate/${project.name}.p12`).
    * **keySize** The size of the key in bits (default 2048)
    * **daysValid** The number of days the key will be valid (default 365)
